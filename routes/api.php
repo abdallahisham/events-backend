@@ -16,3 +16,21 @@ use Illuminate\Http\Request;
 Route::middleware('auth:api')->get('/user', function (Request $request) {
     return $request->user();
 });
+
+Route::post('login', 'UsersController@login');
+Route::post('register', 'UsersController@register');
+
+Route::post('events/image', 'EventsController@storeImage');
+Route::get('events/search', 'EventSearchController@index');
+Route::apiResource('events', 'EventsController');
+
+
+Route::middleware('auth:api')->group(function () {
+
+});
+
+Route::get('test', function () {
+	return [
+		'message' => 'Hello world'
+	];
+});

@@ -3,7 +3,13 @@
 namespace App\Exceptions;
 
 use Exception;
+use Illuminate\Auth\Access\AuthorizationException;
+use Illuminate\Auth\AuthenticationException;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Validation\UnauthorizedException;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class Handler extends ExceptionHandler
 {
@@ -42,10 +48,43 @@ class Handler extends ExceptionHandler
      *
      * @param  \Illuminate\Http\Request  $request
      * @param  \Exception  $exception
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Http\Response|JsonResponse
      */
     public function render($request, Exception $exception)
     {
+        if ($exception instanceof ModelNotFoundException) {
+            if ($request->wantsJson()) {
+                return new JsonResponse([
+                    'response' => [
+                        'httpCode' => 404,
+                        'message' => 'Record not found'
+                    ],
+                ]);
+            }
+        }
+
+        if ($exception instanceof NotFoundHttpException) {
+            if ($request->wantsJson()) {
+                return new JsonResponse([
+                    'response' => [
+                        'httpCode' => 404,
+                        'message' => 'Url not found on server'
+                    ],
+                ]);
+            }
+        }
+
+        if ($exception instanceof AuthenticationException) {
+            if ($request->wantsJson()) {
+                return new JsonResponse([
+                    'response' => [
+                        'httpCode' => 401,
+                        'message' => 'email or password not correct'
+                    ],
+                ]);
+            }
+        }
+
         return parent::render($request, $exception);
     }
 }

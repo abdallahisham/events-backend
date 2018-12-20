@@ -39,5 +39,11 @@ return [
             'tolerance' => env('STRIPE_WEBHOOK_TOLERANCE', 300),
         ],
     ],
+    'oauth' => [
+        'default_url' => env('OAUTH_URL'),
+        'client_id' => env('OAUTH_CLIENT_ID'),
+        'client_secret' => env('OAUTH_SECRET'),
+        'grant_type' => env('OAUTH_GRANT_TYPE'),
+    ]
 
 ];
