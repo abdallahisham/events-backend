@@ -79,7 +79,7 @@ class Handler extends ExceptionHandler
                 return new JsonResponse([
                     'response' => [
                         'httpCode' => 401,
-                        'message' => 'email or password not correct'
+                        'message' => 'You are not authenticated!'
                     ],
                 ]);
             }

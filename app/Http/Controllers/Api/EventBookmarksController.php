@@ -2,34 +2,28 @@
 
 namespace App\Http\Controllers\Api;
 
-use App\Models\Event;
-use App\Repositories\Contracts\EventRepository;
-use App\Responses\Response;
-use App\Transformers\EventResponse;
-use App\Transformers\EventTransformer;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
-use Illuminate\Support\Collection;
 
-class EventSearchController extends Controller
+class EventBookmarksController extends Controller
 {
-    private $events;
 
-    public function __construct(EventRepository $events)
+    public function __construct()
     {
-        $this->events = $events;
+        $this->middleware('auth:api');
     }
 
-    public function index(Request $request)
+    public function bookmarks()
     {
+        logger()->info('Loading events');
         /**
-         * @var $events Collection
+         * @var $user \App\User
          */
-        $events = $this->events->filter($request);
         $user = request()->user('api') ?? false;
-        $events->transform(function ($event) use ($user) {
+        $favorites = $user->favorites;
+        $favorites->transform(function ($event) use ($user) {
             /**
-             * @var $event Event
+             * @var $event \App\Models\Event
              */
             return [
                 'id' => $event->id,
@@ -52,6 +46,22 @@ class EventSearchController extends Controller
                 'is_liked' => $user ? (int) $user->favorites->where('id', $event->id)->count() : 0
             ];
         });
-        return new EventResponse($events, EventResponse::HTTP_OK);
+        return [
+            'response' => [
+                'httpCode' => 200,
+                'data' => $favorites->all()
+            ]
+        ];
+    }
+
+    public function bookmark(Request $request)
+    {
+        logger()->info('Bookmarking ' . request('id') . ' by ' . request()->user('api')->email);
+        $request->user()->favorites()->toggle(request('id'));
+        return [
+            'response' => [
+                'httpCode' => 200
+            ]
+        ];
     }
 }

@@ -12,6 +12,12 @@ use Prettus\Repository\Contracts\RepositoryInterface;
  */
 interface EventRepository extends RepositoryInterface
 {
+    public function filter(Request $request);
+
+    public function getEventsTypes(): array;
+
+    public function saveImage(Request $request, int $id);
+
     const THIS_DAY = 0;
     const THIS_WEEK = 1;
     const THIS_MONTH = 2;
@@ -30,8 +36,4 @@ interface EventRepository extends RepositoryInterface
     const TYPE_CRAFTS = 10;
     const TYPE_TOURISM = 11;
     const TYPE_RELIGIOUS = 12;
-
-    public function filter(Request $request);
-
-    public function getEventsTypes(): array;
 }

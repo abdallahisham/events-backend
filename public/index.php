@@ -8,6 +8,7 @@
  */
 
 define('LARAVEL_START', microtime(true));
+date_default_timezone_set('Africa/Cairo');
 
 /*
 |--------------------------------------------------------------------------

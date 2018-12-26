@@ -9,6 +9,7 @@ $factory->define(App\Models\Event::class, function (Faker $faker) {
         'start_date' => $faker->date(),
         'end_date' => $faker->date(),
         'start_time' => $faker->time(),
+        'end_time' => $faker->time(),
         'address' => $faker->address,
         'position_latitude' => $faker->latitude,
         'position_longitude' => $faker->longitude,

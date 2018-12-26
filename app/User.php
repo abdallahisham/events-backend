@@ -20,6 +20,8 @@ use Laravel\Passport\HasApiTokens;
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
  * @property mixed $events
+ * @property mixed $favorites
+ * @property mixed $booking
  * @property-read \Illuminate\Database\Eloquent\Collection|\Laravel\Passport\Client[] $clients
  * @property-read \Illuminate\Notifications\DatabaseNotificationCollection|\Illuminate\Notifications\DatabaseNotification[] $notifications
  * @property-read \Illuminate\Database\Eloquent\Collection|\Laravel\Passport\Token[] $tokens
@@ -67,5 +69,15 @@ class User extends Authenticatable
     public function events()
     {
         return $this->hasMany(Event::class);
+    }
+
+    public function favorites()
+    {
+        return $this->belongsToMany(Event::class, 'event_user', 'event_id', 'user_id');
+    }
+
+    public function booking()
+    {
+        return $this->belongsToMany(Event::class, 'booking', 'event_id', 'user_id');
     }
 }

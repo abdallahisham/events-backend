@@ -2,32 +2,26 @@
 
 use Illuminate\Http\Request;
 
-/*
-|--------------------------------------------------------------------------
-| API Routes
-|--------------------------------------------------------------------------
-|
-| Here is where you can register API routes for your application. These
-| routes are loaded by the RouteServiceProvider within a group which
-| is assigned the "api" middleware group. Enjoy building your API!
-|
-*/
-
 Route::middleware('auth:api')->get('/user', function (Request $request) {
     return $request->user();
 });
 
 Route::post('login', 'UsersController@login');
 Route::post('register', 'UsersController@register');
+Route::get('profile', 'UsersController@getProfile');
+Route::post('profile', 'UsersController@updateProfile');
 
+// Search and image
 Route::post('events/image', 'EventsController@storeImage');
-Route::get('events/search', 'EventSearchController@index');
+Route::post('events/search', 'EventSearchController@index');
+// Bookmarks
+Route::get('events/bookmarks', 'EventBookmarksController@bookmarks');
+Route::post('events/bookmark', 'EventBookmarksController@bookmark');
+// Booking
+Route::get('events/bookings', 'EventBookingController@index');
+Route::post('events/book', 'EventBookingController@bookEvent');
+// Restful events api routes
 Route::apiResource('events', 'EventsController');
-
-
-Route::middleware('auth:api')->group(function () {
-
-});
 
 Route::get('test', function () {
 	return [

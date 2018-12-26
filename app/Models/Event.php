@@ -61,7 +61,7 @@ class Event extends Model
         'position_longitude', 'image', 'description', 'is_free',
         'price', 'max_tickets_count', 'has_sponsors',
         'start_date', 'end_date', 'start_time', 'end_time',
-        'user_id', 'address',
+        'user_id', 'address', 'city_id'
     ];
 
     protected $dates = [
@@ -69,7 +69,7 @@ class Event extends Model
     ];
 
     protected $appends = [
-        'image_url', 'duration',
+        'image_url', 'duration', 'start_time_format', 'end_time_format'
     ];
 
     public function user()

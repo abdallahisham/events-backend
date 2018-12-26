@@ -167,6 +167,7 @@ return [
          */
         Rap2hpoutre\LaravelLogViewer\LaravelLogViewerServiceProvider::class,
         Laravel\Passport\PassportServiceProvider::class,
+        Spatie\Fractal\FractalServiceProvider::class,
         /*
          * Application Service Providers...
          */

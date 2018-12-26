@@ -2,48 +2,26 @@
 
 namespace App\Http\Controllers\Api;
 
-use App\Http\Requests\EventCreateRequest;
-use App\Http\Requests\EventUpdateRequest;
-use App\Models\Event;
-use App\Repositories\Contracts\EventRepository;
-use App\Transformers\EventResponse;
-use App\Http\Controllers\Controller;
-use App\User;
 use Illuminate\Http\Request;
-use Illuminate\Support\Collection;
+use App\Http\Controllers\Controller;
 
-class EventsController extends Controller
+class EventBookingController extends Controller
 {
-    private $events;
-
-    function __construct(EventRepository $events)
+    public function __construct()
     {
-        $this->events = $events;
-        $this->middleware('auth:api')->except(['index', 'show']);
+        $this->middleware('auth:api');
     }
 
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\JsonResponse
-     */
     public function index()
     {
         /**
-         * @var $events Collection
+         * @var $user \App\User
          */
-        $events = $this->events->with(['user'])
-            ->orderBy('created_at', 'DESC')
-            ->simplePaginate(10);
-
-        /**
-         * @var $user User
-         */
-        $user = request()->user('api') ?? false;
-
-        $events->transform(function ($event) use ($user) {
+        $user = auth()->user();
+        $bookingList = $user->booking;
+        $bookingList->transform(function ($event) use ($user) {
             /**
-             * @var $event Event
+             * @var $event \App\Models\Event
              */
             return [
                 'id' => $event->id,
@@ -67,59 +45,27 @@ class EventsController extends Controller
                 'is_booked' => $user->booking->where('id', $event->id)->count()
             ];
         });
-        return new EventResponse($events, EventResponse::HTTP_OK);
+
+        return [
+            'response' => [
+                'httpCode' => 200,
+                'data' => $bookingList
+            ]
+        ];
     }
 
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  EventCreateRequest  $request
-     * @return \Illuminate\Http\JsonResponse
-     */
-    public function store(EventCreateRequest $request)
+    public function bookEvent(Request $request)
     {
-        $event = $this->events->create($request->prepared());
-        return new EventResponse($event, EventResponse::HTTP_CREATED);
-    }
+        /**
+         * @var $user \App\User
+         */
+        $user = $request->user();
+        $user->booking()->toggle(request('id'));
 
-    public function storeImage(Request $request)
-    {
-        $this->events->saveImage($request, $request->id);
-        return new EventResponse([], EventResponse::HTTP_OK);
-    }
-
-    /**
-     * Display the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\JsonResponse
-     */
-    public function show($id)
-    {
-        $event = $this->events->with(['user'])->find($id);
-        return new EventResponse($event);
-    }
-
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  EventUpdateRequest  $request
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function update(EventUpdateRequest $request, $id)
-    {
-
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy($id)
-    {
-        //
+        return [
+            'response' => [
+                'httpCode' => 200
+            ]
+        ];
     }
 }

@@ -52,7 +52,8 @@ class EventCreateRequest extends FormRequest
             'position_longitude' => $this->request->get('long'),
             'has_sponsors' => $this->request->get('sponsor'),
             'event_type_id' => $this->request->get('type'),
-            'user_id' => request()->user()->id
+            'user_id' => request()->user()->id,
+            'city_id' => request('city') ?? 1
         ];
         return $data;
     }
