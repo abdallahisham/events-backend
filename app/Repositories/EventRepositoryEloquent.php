@@ -78,9 +78,13 @@ class EventRepositoryEloquent extends BaseRepository implements EventRepository
 
     public function saveImage(Request $request, int $id)
     {
-        $userId = $request->user()->id;
-        $fileName = time() . '_' . $userId . '.' . $request->file('file')->getClientOriginalExtension();
-        $request->file('file')->storeAs("public/{$userId}", $fileName);
-        return $this->update(['image' => $fileName], $id);
+        if ($request->hasFile('file')) {
+            $userId = $request->user()->id;
+            $fileName = time() . '_' . $userId . '.' . $request->file('file')->getClientOriginalExtension();
+            $request->file('file')->storeAs("public/{$userId}", $fileName);
+            return $this->update(['image' => $fileName], $id);
+        } else {
+            return false;
+        }
     }
 }

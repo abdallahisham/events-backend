@@ -11,8 +11,7 @@ Route::post('register', 'UsersController@register');
 Route::get('profile', 'UsersController@getProfile');
 Route::post('profile', 'UsersController@updateProfile');
 
-// Search and image
-Route::post('events/image', 'EventsController@storeImage');
+// Search
 Route::post('events/search', 'EventSearchController@index');
 // Bookmarks
 Route::get('events/bookmarks', 'EventBookmarksController@bookmarks');
@@ -21,7 +20,12 @@ Route::post('events/bookmark', 'EventBookmarksController@bookmark');
 Route::get('events/bookings', 'EventBookingController@index');
 Route::post('events/book', 'EventBookingController@bookEvent');
 // Restful events api routes
-Route::apiResource('events', 'EventsController');
+Route::post('events/image', 'EventsController@storeImage');
+Route::post('events/delete', 'EventsController@destroy');
+Route::post('events/update', 'EventsController@update');
+Route::apiResource('events', 'EventsController')->only(['index', 'show', 'store']);
+
+Route::get('my-events', 'UserEventsController@index');
 
 Route::get('test', function () {
 	return [

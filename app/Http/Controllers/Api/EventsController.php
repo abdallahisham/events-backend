@@ -16,7 +16,7 @@ class EventsController extends Controller
 {
     private $events;
 
-    function __construct(EventRepository $events)
+    public function __construct(EventRepository $events)
     {
         $this->events = $events;
         $this->middleware('auth:api')->except(['index', 'show']);
@@ -29,6 +29,7 @@ class EventsController extends Controller
      */
     public function index()
     {
+        logger()->info('Getting events');
         /**
          * @var $events Collection
          */
@@ -52,19 +53,19 @@ class EventsController extends Controller
                 'end_date' => $event->end_date->format('D d M'),
                 'start_time' => $event->start_time_format,
                 'end_time' => $event->end_time_format,
-                'desc' => 'It is a long established fact that a reader will be distracted by the readable content of a page when looking at its layout. The point of using Lorem Ipsum is that it has a more-or-less normal distribution of letters, as opposed to using \'Content here, content here\', making it look like readable English. Many desktop publishing packages and web page editors now use Lorem Ipsum as their default model text, and a search for \'lorem ipsum\' will uncover many web sites still in their infancy. Various versions have evolved over the years, sometimes by accident, sometimes on purpose (injected humour and the like)',
+                'desc' => $event->description ?? '',
                 'address' => $event->address,
                 'venue' => 'Jeddah International Expo',
-                'price' => $event->price,
+                'price' => $event->price ?? 0,
                 'lon' => $event->position_longitude,
                 'lat' => $event->position_latitude,
                 'user_id' => $event->user->id,
                 'user_name' => $event->user->name,
                 'image_url' => $event->image_url,
-                'user_desc' => 'It is a long established fact that a reader will be distracted by the readable content of a page when looking at its layout. The point of using Lorem Ipsum is that it has a more-or-less normal distribution of letters, as opposed to using \'Content here, content here\', making it look like readable English. Many desktop publishing packages and web page editors now use Lorem Ipsum as their default model text, and a search for \'lorem ipsum\' will uncover many web sites still in their infancy. Various versions have evolved over the years, sometimes by accident, sometimes on purpose (injected humour and the like)',
+                'user_desc' => $event->user->desc ?? '',
                 'duration' => $event->duration,
-                'is_liked' => $user->favorites->where('id', $event->id)->count(),
-                'is_booked' => $user->booking->where('id', $event->id)->count()
+                'is_liked' => $user ? $user->favorites->where('id', $event->id)->count() : 0,
+                'is_booked' => $user ? $user->booking->where('id', $event->id)->count() : 0
             ];
         });
         return new EventResponse($events, EventResponse::HTTP_OK);
@@ -78,12 +79,14 @@ class EventsController extends Controller
      */
     public function store(EventCreateRequest $request)
     {
+        logger()->info('Adding event..');
         $event = $this->events->create($request->prepared());
         return new EventResponse($event, EventResponse::HTTP_CREATED);
     }
 
     public function storeImage(Request $request)
     {
+        logger()->info('Uploading image');
         $this->events->saveImage($request, $request->id);
         return new EventResponse([], EventResponse::HTTP_OK);
     }
@@ -104,22 +107,28 @@ class EventsController extends Controller
      * Update the specified resource in storage.
      *
      * @param  EventUpdateRequest  $request
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
+     * @return EventResponse
      */
-    public function update(EventUpdateRequest $request, $id)
+    public function update(EventUpdateRequest $request)
     {
-
+        logger()->info('Updating ' . $request->id);
+        $event = $this->events->find($request->id);
+        $this->events->update($request->prepared(), $event->id);
+        return new EventResponse($event, 200);
     }
 
     /**
      * Remove the specified resource from storage.
      *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
+     * @param Request $request
+     * @return EventResponse
      */
-    public function destroy($id)
+    public function destroy(Request $request)
     {
-        //
+        $event = $this->events->find($request->id);
+        if ($event->user_id == $request->user()->id) {
+            $this->events->delete($event->id);
+        }
+        return new EventResponse([], 200);
     }
 }

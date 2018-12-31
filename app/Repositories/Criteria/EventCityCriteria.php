@@ -22,7 +22,9 @@ class EventCityCriteria implements CriteriaInterface
      */
     public function apply($model, RepositoryInterface $repository)
     {
-        $model->where('city_id', request('city'));
+        if (request('city')) {
+            $model->where('city_id', request('city'));
+        }
         return $model;
     }
 }

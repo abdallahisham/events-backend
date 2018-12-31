@@ -30,30 +30,33 @@ class EventCreateRequest extends FormRequest
             'start_date' => ['required'],
             'end_date' => ['required', 'after_or_equal:start_date'],
             'start_time' => ['required'],
+            'end_time' => ['required'],
             'address' => ['required'],
             'lat' => ['required'],
             'long' => ['required'],
             'sponsor' => ['required'],
             'type' => ['required'],
+            'price' => ['required'],
         ];
     }
 
     public function prepared()
     {
         $data = [
-            'name' => $this->request->get('name'),
-            'description' => $this->request->get('desc'),
-            'start_date' => new Carbon($this->request->get('start_date')),
-            'end_date' => new Carbon($this->request->get('end_date')),
-            'start_time' => $this->request->get('start_time'),
-            'end_time' => $this->request->get('end_time'),
-            'address' => $this->request->get('address'),
-            'position_latitude' => $this->request->get('lat'),
-            'position_longitude' => $this->request->get('long'),
-            'has_sponsors' => $this->request->get('sponsor'),
-            'event_type_id' => $this->request->get('type'),
+            'name' => request('name'),
+            'description' => request('desc'),
+            'start_date' => new Carbon(request('start_date')),
+            'end_date' => new Carbon(request('end_date')),
+            'start_time' => request('start_time'),
+            'end_time' => request('end_time'),
+            'address' => request('address'),
+            'position_latitude' => request('lat'),
+            'position_longitude' => request('long'),
+            'has_sponsors' => request('sponsor'),
+            'event_type_id' => request('type'),
             'user_id' => request()->user()->id,
-            'city_id' => request('city') ?? 1
+            'city_id' => request('city') ?? 1,
+            'price' => request('price')
         ];
         return $data;
     }

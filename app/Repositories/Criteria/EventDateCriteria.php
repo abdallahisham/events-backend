@@ -25,17 +25,29 @@ class EventDateCriteria implements CriteriaInterface
     public function apply($model, RepositoryInterface $repository)
     {
         switch (request('date')) {
-            case EventRepository::THIS_DAY:
+            case EventRepository::ANY_THING:
+                // Do nothing
+                break;
+
+            case EventRepository::TODAY:
                 $now = Carbon::now()->format('Y-m-d');
                 $model->where('start_date', '<=', $now)
                     ->where('end_date', '>=', $now);
                 break;
 
+            case EventRepository::TOMORROW:
+                $tomorrow = Carbon::now()->addDay()->format('Y-m-d');
+                $model->where('start_date', '<=', $tomorrow)
+                    ->where('end_date', '>=', $tomorrow);
+                break;
+
             case EventRepository::THIS_WEEK:
                 Carbon::setWeekStartsAt(Carbon::SATURDAY);
                 Carbon::setWeekEndsAt(Carbon::FRIDAY);
+
                 $weekStart = Carbon::now()->startOfWeek()->format('Y-m-d');
                 $weekEnd = Carbon::now()->endOfWeek()->format('Y-m-d');
+
                 $today = Carbon::now()->format('Y-m-d');
                 $model->whereBetween('start_date', [$weekStart, $weekEnd])
                     ->where('end_date', '>=', $today);

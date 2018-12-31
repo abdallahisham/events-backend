@@ -22,6 +22,9 @@ class EventTypeCriteria implements CriteriaInterface
      */
     public function apply($model, RepositoryInterface $repository)
     {
-        return $model->where('event_type_id', request('type'));
+        if (request('type')) {
+            $model->where('event_type_id', request('type'));
+        }
+        return $model;
     }
 }

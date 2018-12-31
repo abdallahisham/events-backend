@@ -18,10 +18,12 @@ interface EventRepository extends RepositoryInterface
 
     public function saveImage(Request $request, int $id);
 
-    const THIS_DAY = 0;
-    const THIS_WEEK = 1;
-    const THIS_MONTH = 2;
-    const THIS_YEAR = 3;
+    const ANY_THING = 0;
+    const TODAY = 1;
+    const TOMORROW = 2;
+    const THIS_WEEK = 3;
+    const THIS_MONTH = 4;
+    const THIS_YEAR = 5;
 
     const TYPE_ANYTHING = 0;
     const TYPE_VOICE_EVENT = 1;

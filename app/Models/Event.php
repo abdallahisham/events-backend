@@ -34,6 +34,7 @@ use Illuminate\Database\Eloquent\Model;
  * @property mixed|User $user
  * @property mixed $image_url
  * @property mixed $duration
+ * @property mixed $going
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Event newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Event newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Event query()
@@ -72,11 +73,27 @@ class Event extends Model
         'image_url', 'duration', 'start_time_format', 'end_time_format'
     ];
 
+    protected static function boot()
+    {
+        parent::boot();
+        static::addGlobalScope(function ($query) {
+            $todayDateString = Carbon::now()->format('Y-m-d');
+            $query->where('end_date', '>=' , $todayDateString);
+        });
+    }
+
+    // Relationships
     public function user()
     {
         return $this->belongsTo(User::class);
     }
 
+    public function going()
+    {
+        return $this->belongsToMany(User::class, 'booking', 'user_id', 'event_id');
+    }
+
+    // Accessors and mutators
     public function getImageUrlAttribute()
     {
         $baseUrl = env('APP_URL');

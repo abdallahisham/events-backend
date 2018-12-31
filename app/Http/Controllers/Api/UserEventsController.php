@@ -2,35 +2,30 @@
 
 namespace App\Http\Controllers\Api;
 
-use App\Models\Event;
-use App\Repositories\Contracts\EventRepository;
-use App\Responses\Response;
 use App\Transformers\EventResponse;
-use App\Transformers\EventTransformer;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
-use Illuminate\Support\Collection;
 
-class EventSearchController extends Controller
+class UserEventsController extends Controller
 {
-    private $events;
-
-    public function __construct(EventRepository $events)
+    public function __construct()
     {
-        $this->events = $events;
+        $this->middleware('auth:api');
     }
 
     public function index(Request $request)
     {
-        logger()->info('Searching...');
+        logger()->info("Getting {$request->user()->email}'s events");
         /**
-         * @var $events Collection
+         * @var $user \App\User
          */
-        $events = $this->events->filter($request);
-        $user = request()->user('api') ?? false;
+        $user = $request->user();
+
+        $events = $user->events;
+
         $events->transform(function ($event) use ($user) {
             /**
-             * @var $event Event
+             * @var $event /App/Models/Event
              */
             return [
                 'id' => $event->id,
@@ -50,9 +45,16 @@ class EventSearchController extends Controller
                 'image_url' => $event->image_url,
                 'user_desc' => 'It is a long established fact that a reader will be distracted by the readable content of a page when looking at its layout. The point of using Lorem Ipsum is that it has a more-or-less normal distribution of letters, as opposed to using \'Content here, content here\', making it look like readable English. Many desktop publishing packages and web page editors now use Lorem Ipsum as their default model text, and a search for \'lorem ipsum\' will uncover many web sites still in their infancy. Various versions have evolved over the years, sometimes by accident, sometimes on purpose (injected humour and the like)',
                 'duration' => $event->duration,
-                'is_liked' => $user ? (int) $user->favorites->where('id', $event->id)->count() : 0
+                'is_liked' => $user ? $user->favorites->where('id', $event->id)->count() : 0,
+                'is_booked' => $user ? $user->booking->where('id', $event->id)->count() : 0
             ];
         });
-        return new EventResponse($events, EventResponse::HTTP_OK);
+
+        return [
+            'response' => [
+                'httpCode' => 200,
+                'data' => $events
+            ]
+        ];
     }
 }

@@ -15,7 +15,7 @@ class UsersController extends Controller
 
     function __construct(UsersRepository $users)
     {
-        $this->middleware('auth:api')->except(['login', 'register']);
+        $this->middleware('auth:api')->only(['getProfile', 'updateProfile']);
         $this->users = $users;
     }
 
@@ -27,17 +27,28 @@ class UsersController extends Controller
 
     public function register(RegisterUserRequest $request)
     {
+        logger()->info('Registering user...');
         $this->users->create($request->prepared());
-
+        logger()->info($request->prepared()['desc']);
         $response = $this->users->login($request->all());
         return new AccessTokenResponse($response, 200);
     }
 
     public function getProfile()
     {
+        logger()->info("Getting profile ...");
         $id = auth()->id();
         $user = $this->users->find($id);
-        return new UserResponse($user);
+        logger()->info($user->id);
+        return [
+            'response' => [
+                'httpCode' => 200,
+                'name' => $user->name,
+                'email' => $user->email,
+                'mobile_number' => $user->mobile_number,
+                'desc' => $user->desc ?? ''
+            ]
+        ];
     }
 
     public function updateProfile(Request $request)

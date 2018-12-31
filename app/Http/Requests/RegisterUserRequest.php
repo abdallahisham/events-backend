@@ -4,6 +4,7 @@ namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 use Hash;
+use Illuminate\Validation\Rule;
 
 class RegisterUserRequest extends FormRequest
 {
@@ -25,20 +26,22 @@ class RegisterUserRequest extends FormRequest
     public function rules()
     {
         return [
-            'name' => 'required',
-            'email' => 'required|email|unique:users',
-            'mobile_number' => 'required|unique:users',
-            'password' => 'required'
+            'name' => ['required'],
+            'email' => ['required', 'email', Rule::unique('users')],
+            'mobile_number' => ['required', Rule::unique('users')],
+            'password' => ['required'],
+            'desc' => ['required']
         ];
     }
     
     public function prepared()
     {
         return [
-            'name' => $this->request->get('name'),
-            'email' => $this->request->get('email'),
-            'mobile_number' => $this->request->get('mobile_number'),
-            'password' => Hash::make($this->request->get('password')),
+            'name' => request('name'),
+            'email' => request('email'),
+            'mobile_number' => request('mobile_number'),
+            'password' => Hash::make(request('password')),
+            'desc' => request('desc')
         ];
     }
 }
