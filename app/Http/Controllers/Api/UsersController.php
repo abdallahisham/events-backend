@@ -7,13 +7,13 @@ use App\Transformers\AccessTokenResponse;
 use App\Transformers\UserResponse;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
-use App\Repositories\Contracts\UsersRepository;
+use App\Repositories\Contracts\UserRepository;
 
 class UsersController extends Controller
 {
     private $users;
 
-    function __construct(UsersRepository $users)
+    function __construct(UserRepository $users)
     {
         $this->middleware('auth:api')->only(['getProfile', 'updateProfile']);
         $this->users = $users;

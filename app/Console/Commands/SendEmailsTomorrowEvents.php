@@ -2,11 +2,8 @@
 
 namespace App\Console\Commands;
 
-use App\Mail\NotifyComingEvent;
-use App\Repositories\Contracts\EventRepository;
-use Carbon\Carbon;
+use App\Services\EventNotificationsService;
 use Illuminate\Console\Command;
-use Mail;
 
 class SendEmailsTomorrowEvents extends Command
 {
@@ -24,16 +21,16 @@ class SendEmailsTomorrowEvents extends Command
      */
     protected $description = "Sending emails to tomorrow's events going users";
 
-    private $eventRepository;
+    private $notificationsService;
 
     /**
      * Create a new command instance.
-     * @param EventRepository $eventRepository
+     * @param $notificationsService EventNotificationsService
      */
-    public function __construct(EventRepository $eventRepository)
+    public function __construct(EventNotificationsService $notificationsService)
     {
         parent::__construct();
-        $this->eventRepository = $eventRepository;
+        $this->notificationsService = $notificationsService;
     }
 
     /**
@@ -42,12 +39,6 @@ class SendEmailsTomorrowEvents extends Command
      */
     public function handle()
     {
-        logger()->info('Sending emails...');
-        $comingEvents = $this->eventRepository->with('going')
-            ->findWhere(['start_date' => Carbon::now()->addDay()->format('Y-m-d')]);
-        foreach ($comingEvents as $event) {
-            Mail::to($event->going->all())->send(new NotifyComingEvent($event));
-        }
-        logger()->info('Emails sent.');
+        $this->notificationsService->notifyUsersWithTomorrowEvents();
     }
 }

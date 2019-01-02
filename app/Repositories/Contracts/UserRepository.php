@@ -1,14 +1,17 @@
 <?php
 
 namespace App\Repositories\Contracts;
+use App\User;
 use Prettus\Repository\Contracts\RepositoryInterface;
 
 /**
- * Interface UsersRepository.
+ * Interface UserRepository.
  *
  * @package namespace App\Repositories\Contracts;
  */
-interface UsersRepository extends RepositoryInterface
+interface UserRepository extends RepositoryInterface
 {
     public function login(array $data);
+
+    public function authenticatedUser(): User;
 }

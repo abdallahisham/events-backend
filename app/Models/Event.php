@@ -35,6 +35,7 @@ use Illuminate\Database\Eloquent\Model;
  * @property mixed $image_url
  * @property mixed $duration
  * @property mixed $going
+ * @property mixed $liked_by
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Event newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Event newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Event query()
@@ -57,12 +58,8 @@ use Illuminate\Database\Eloquent\Model;
  */
 class Event extends Model
 {
-    protected $fillable = [
-        'name', 'event_type_id', 'position_latitude',
-        'position_longitude', 'image', 'description', 'is_free',
-        'price', 'max_tickets_count', 'has_sponsors',
-        'start_date', 'end_date', 'start_time', 'end_time',
-        'user_id', 'address', 'city_id'
+    protected $guarded = [
+        'id'
     ];
 
     protected $dates = [
@@ -77,6 +74,9 @@ class Event extends Model
     {
         parent::boot();
         static::addGlobalScope(function ($query) {
+            /**
+             * @var $query \Illuminate\Database\Eloquent\Builder
+             */
             $todayDateString = Carbon::now()->format('Y-m-d');
             $query->where('end_date', '>=' , $todayDateString);
         });
@@ -91,6 +91,11 @@ class Event extends Model
     public function going()
     {
         return $this->belongsToMany(User::class, 'booking', 'user_id', 'event_id');
+    }
+
+    public function likedBy()
+    {
+        return $this->belongsToMany(User::class, 'event_user', 'user_id', 'event_id');
     }
 
     // Accessors and mutators

@@ -9,15 +9,15 @@ use Illuminate\Auth\AuthenticationException;
 use Illuminate\Container\Container as Application;
 use Prettus\Repository\Eloquent\BaseRepository;
 use Prettus\Repository\Criteria\RequestCriteria;
-use App\Repositories\Contracts\UsersRepository;
+use App\Repositories\Contracts\UserRepository;
 use App\User;
 
 /**
- * Class UsersRepositoryEloquent.
+ * Class UserRepositoryEloquent.
  *
  * @package namespace App\Repositories;
  */
-class UsersRepositoryEloquent extends BaseRepository implements UsersRepository
+class UserRepositoryEloquent extends BaseRepository implements UserRepository
 {
     private $http;
     private $apiClient;
@@ -58,6 +58,11 @@ class UsersRepositoryEloquent extends BaseRepository implements UsersRepository
             throw new AuthenticationException();
         }
         return json_decode((string)$res->getBody(), true);
+    }
+
+    public function authenticatedUser(): User
+    {
+        return request()->user();
     }
 
 }

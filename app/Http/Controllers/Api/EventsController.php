@@ -4,13 +4,13 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Requests\EventCreateRequest;
 use App\Http\Requests\EventUpdateRequest;
-use App\Models\Event;
+use App\Http\Responses\Response;
+use App\Http\Responses\ResponseWithCode;
 use App\Repositories\Contracts\EventRepository;
 use App\Transformers\EventResponse;
 use App\Http\Controllers\Controller;
-use App\User;
+use App\Transformers\EventTransformer;
 use Illuminate\Http\Request;
-use Illuminate\Support\Collection;
 
 class EventsController extends Controller
 {
@@ -25,50 +25,17 @@ class EventsController extends Controller
     /**
      * Display a listing of the resource.
      *
-     * @return \Illuminate\Http\JsonResponse
+     * @return \App\Http\Responses\Response
      */
     public function index()
     {
         logger()->info('Getting events');
-        /**
-         * @var $events Collection
-         */
         $events = $this->events->with(['user'])
             ->orderBy('created_at', 'DESC')
-            ->simplePaginate(10);
+            ->all();
+//            ->simplePaginate(10);
 
-        /**
-         * @var $user User
-         */
-        $user = request()->user('api') ?? false;
-
-        $events->transform(function ($event) use ($user) {
-            /**
-             * @var $event Event
-             */
-            return [
-                'id' => $event->id,
-                'name' => $event->name,
-                'start_date' => $event->start_date->format('D d M'),
-                'end_date' => $event->end_date->format('D d M'),
-                'start_time' => $event->start_time_format,
-                'end_time' => $event->end_time_format,
-                'desc' => $event->description ?? '',
-                'address' => $event->address,
-                'venue' => 'Jeddah International Expo',
-                'price' => $event->price ?? 0,
-                'lon' => $event->position_longitude,
-                'lat' => $event->position_latitude,
-                'user_id' => $event->user->id,
-                'user_name' => $event->user->name,
-                'image_url' => $event->image_url,
-                'user_desc' => $event->user->desc ?? '',
-                'duration' => $event->duration,
-                'is_liked' => $user ? $user->favorites->where('id', $event->id)->count() : 0,
-                'is_booked' => $user ? $user->booking->where('id', $event->id)->count() : 0
-            ];
-        });
-        return new EventResponse($events, EventResponse::HTTP_OK);
+        return new Response($events, new EventTransformer());
     }
 
     /**
@@ -86,9 +53,9 @@ class EventsController extends Controller
 
     public function storeImage(Request $request)
     {
-        logger()->info('Uploading image');
+        logger()->info('Uploading image...');
         $this->events->saveImage($request, $request->id);
-        return new EventResponse([], EventResponse::HTTP_OK);
+        return new ResponseWithCode(200);
     }
 
     /**
@@ -121,7 +88,7 @@ class EventsController extends Controller
      * Remove the specified resource from storage.
      *
      * @param Request $request
-     * @return EventResponse
+     * @return \App\Http\Responses\ResponseWithCode
      */
     public function destroy(Request $request)
     {
@@ -129,6 +96,6 @@ class EventsController extends Controller
         if ($event->user_id == $request->user()->id) {
             $this->events->delete($event->id);
         }
-        return new EventResponse([], 200);
+        return new ResponseWithCode(200);
     }
 }

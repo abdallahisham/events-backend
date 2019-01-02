@@ -56,17 +56,13 @@ class EventDateCriteria implements CriteriaInterface
             case EventRepository::THIS_MONTH:
                 $monthStart = Carbon::now()->startOfMonth()->format('Y-m-d');
                 $monthEnd = Carbon::now()->endOfMonth()->format('Y-m-d');
-                $today = Carbon::now()->format('Y-m-d');
-                $model->whereBetween('start_date', [$monthStart, $monthEnd])
-                    ->where('end_date', '>=', $today);
+                $model->whereBetween('end_date', [$monthStart, $monthEnd]);
                 break;
 
             case EventRepository::THIS_YEAR:
                 $yearStart = Carbon::now()->startOfYear()->format('Y-m-d');
                 $yearEnd = Carbon::now()->endOfYear()->format('Y-m-d');
-                $today = Carbon::now()->format('Y-m-d');
-                $model->whereBetween('start_date', [$yearStart, $yearEnd])
-                    ->where('end_date', '>=', $today);
+                $model->whereBetween('end_date', [$yearStart, $yearEnd]);
                 break;
         }
         return $model;

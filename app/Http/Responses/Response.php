@@ -1,32 +1,34 @@
-<?php namespace App\Responses;
+<?php namespace App\Http\Responses;
 
 use App\Transformers\BaseTransformer;
 use App\Transformers\EventTransformer;
+use App\Transformers\NullTransformer;
 use Illuminate\Contracts\Support\Responsable;
+use Spatie\Fractalistic\ArraySerializer;
 
 class Response implements Responsable
 {
     /**
-     * The response original content
+     * Response original content
      * @var mixed
      */
     private $content;
-    /**
-     * Status code of response
-     * @var int
-     */
-    private $status;
     /**
      * Transformer that used to transform content
      * @var BaseTransformer
      */
     private $transformer;
+    /**
+     * Status code of response
+     * @var int
+     */
+    private $status;
 
-    public function __construct($content, int $status, BaseTransformer $transformer)
+    public function __construct($content = [], BaseTransformer $transformer = null, int $status = 200)
     {
         $this->content = $content;
+        $this->transformer = $transformer ?? new NullTransformer();
         $this->status = $status;
-        $this->transformer = $transformer;
     }
 
     /**
@@ -37,24 +39,26 @@ class Response implements Responsable
      */
     public function toResponse($request)
     {
-        $response = ['httpCode' => $this->status];
-        //
+        $response = [];
+
+        // Check if content has pagination
         if ($this->hasPagination()) {
-            $response = array_merge($response, [
+            $response = [
                 'current_page' => $this->content->currentPage(),
                 'next_page_url' => $this->content->nextPageUrl(),
                 'previous_page_url' => $this->content->previousPageUrl(),
-                'is_first_page' => $this->content->onFirstPage()
-            ]);
+            ];
+        } else {
+            $response['next_page_url'] = null;
         }
-
-        $response = array_merge($response, [
-            'data' => $this->content->all()
-        ]);
-
-        return [
-            'response' => $response
-        ];
+        // Set the http code
+        $response['httpCode'] = $this->status;
+        // Check if content is not empty (In some case response is just httpCode)
+        if (!empty($this->content)) {
+            $this->content = fractal($this->content, $this->transformer)->toArray();
+            $response += $this->content;
+        }
+        return ['response' => $response];
     }
 
     private function hasPagination()

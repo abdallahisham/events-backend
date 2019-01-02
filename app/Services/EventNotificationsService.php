@@ -1,8 +1,10 @@
 <?php namespace App\Services;
 
 use App\Repositories\Contracts\EventRepository;
-use App\Repositories\Contracts\UsersRepository;
+use App\Repositories\Contracts\UserRepository;
 use Carbon\Carbon;
+use Mail;
+use App\Mail\NotifyComingEvent;
 
 /**
  * Class EventNotificationsService
@@ -14,18 +16,25 @@ class EventNotificationsService
     private $userRepository;
     private $eventRepository;
 
-    public function __construct(UsersRepository $usersRepository, EventRepository $eventRepository)
+    public function __construct(UserRepository $usersRepository, EventRepository $eventRepository)
     {
         $this->userRepository = $usersRepository;
         $this->eventRepository = $eventRepository;
     }
 
+    /**
+     * Send emails for tomorrow events attenders
+     */
     public function notifyUsersWithTomorrowEvents()
     {
+        logger()->info('Start sending emails...');
         $tomorrowDateString = Carbon::now()->addDay()->format('Y-m-d');
         $events = $this->eventRepository->with(['going'])
             ->findWhere(['start_date' => $tomorrowDateString]);
-        return $events;
+        foreach ($events as $event) {
+            Mail::to($event->going->all())->send(new NotifyComingEvent($event));
+        }
+        logger()->info('Emails sent.');
     }
 
 }
