@@ -7,6 +7,7 @@ use App\Http\Requests\EventUpdateRequest;
 use App\Http\Responses\Response;
 use App\Http\Responses\ResponseWithCode;
 use App\Repositories\Contracts\EventRepository;
+use App\Repositories\Contracts\UserRepository;
 use App\Transformers\EventResponse;
 use App\Http\Controllers\Controller;
 use App\Transformers\EventTransformer;
@@ -88,12 +89,13 @@ class EventsController extends Controller
      * Remove the specified resource from storage.
      *
      * @param Request $request
-     * @return \App\Http\Responses\ResponseWithCode
+     * @param UserRepository $userRepository
+     * @return ResponseWithCode
      */
-    public function destroy(Request $request)
+    public function destroy(Request $request, UserRepository $userRepository)
     {
         $event = $this->events->find($request->id);
-        if ($event->user_id == $request->user()->id) {
+        if ($event->user_id == $userRepository->authenticatedUserId()) {
             $this->events->delete($event->id);
         }
         return new ResponseWithCode(200);

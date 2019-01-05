@@ -65,4 +65,8 @@ class UserRepositoryEloquent extends BaseRepository implements UserRepository
         return request()->user();
     }
 
+    public function authenticatedUserId(): int
+    {
+        return is_null($this->authenticatedUser()) ? 0 : $this->authenticatedUser()->id;
+    }
 }

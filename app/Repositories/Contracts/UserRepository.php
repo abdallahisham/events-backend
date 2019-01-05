@@ -14,4 +14,6 @@ interface UserRepository extends RepositoryInterface
     public function login(array $data);
 
     public function authenticatedUser(): User;
+
+    public function authenticatedUserId(): int;
 }

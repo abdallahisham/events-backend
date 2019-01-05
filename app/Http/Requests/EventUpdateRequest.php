@@ -26,7 +26,18 @@ class EventUpdateRequest extends FormRequest
     public function rules()
     {
         return [
-            //
+            'name' => ['required'],
+            'desc' => ['required'],
+            'start_date' => ['required'],
+            'end_date' => ['required', 'after_or_equal:start_date'],
+            'start_time' => ['required'],
+            'end_time' => ['required'],
+            'address' => ['required'],
+            'lat' => ['required'],
+            'long' => ['required'],
+            'sponsor' => ['required'],
+            'type' => ['required'],
+            'price' => ['required'],
         ];
     }
 
@@ -35,25 +46,21 @@ class EventUpdateRequest extends FormRequest
         try {
             $start_date = Carbon::createFromFormat('D d M', request('start_date'));
         } catch (InvalidArgumentException $e) {
-            logger()->info('End: ' . request('start_date'));
             $start_date = new Carbon(request('start_date'));
         }
         try {
             $end_date = Carbon::createFromFormat('D d M', request('end_date'));
         } catch (InvalidArgumentException $e) {
-            logger()->info('End: ' . request('end_date'));
             $end_date = new Carbon(request('end_date'));
         }
         try {
             $start_time = Carbon::createFromFormat('H:i A', request('start_time'));
         } catch (InvalidArgumentException $e) {
-            logger()->info('End: ' . request('start_time'));
             $start_time = new Carbon(request('start_time'));
         }
         try {
             $end_time = Carbon::createFromFormat('H:i A', request('end_time'));
         } catch (InvalidArgumentException $e) {
-            logger()->info('End: ' . request('end_time'));
             $end_time = new Carbon(request('end_time'));
         }
 
