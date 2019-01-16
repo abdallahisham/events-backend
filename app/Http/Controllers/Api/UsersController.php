@@ -44,8 +44,8 @@ class UsersController extends Controller
             'response' => [
                 'httpCode' => 200,
                 'name' => $user->name,
-                'email' => $user->email,
-                'mobile_number' => $user->mobile_number,
+                'email' => str_contains($user->email, '@facebook') ? '' :$user->email,
+                'mobile_number' => $user->mobile_number ?? '',
                 'desc' => $user->desc ?? ''
             ]
         ];

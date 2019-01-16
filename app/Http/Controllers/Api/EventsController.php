@@ -23,11 +23,6 @@ class EventsController extends Controller
         $this->middleware('auth:api')->except(['index', 'show']);
     }
 
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \App\Http\Responses\Response
-     */
     public function index()
     {
         logger()->info('Getting events');
@@ -39,15 +34,12 @@ class EventsController extends Controller
         return new Response($events, new EventTransformer());
     }
 
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  EventCreateRequest  $request
-     * @return \Illuminate\Http\JsonResponse
-     */
     public function store(EventCreateRequest $request)
     {
         logger()->info('Adding event..');
+        logger()->info('Address: ' . $request->address);
+        logger()->info('Long: ' . $request->long);
+        logger()->info('Lat: ' . $request->lat);
         $event = $this->events->create($request->prepared());
         return new EventResponse($event, EventResponse::HTTP_CREATED);
     }
@@ -59,24 +51,12 @@ class EventsController extends Controller
         return new ResponseWithCode(200);
     }
 
-    /**
-     * Display the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\JsonResponse
-     */
     public function show($id)
     {
         $event = $this->events->with(['user'])->find($id);
         return new EventResponse($event);
     }
 
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  EventUpdateRequest  $request
-     * @return EventResponse
-     */
     public function update(EventUpdateRequest $request)
     {
         logger()->info('Updating ' . $request->id);
@@ -85,13 +65,6 @@ class EventsController extends Controller
         return new EventResponse($event, 200);
     }
 
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param Request $request
-     * @param UserRepository $userRepository
-     * @return ResponseWithCode
-     */
     public function destroy(Request $request, UserRepository $userRepository)
     {
         $event = $this->events->find($request->id);

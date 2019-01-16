@@ -31,7 +31,7 @@ class NotifyComingEvent extends Mailable
      */
     public function build()
     {
-        return $this->from("notification{$this->event->id}@falyat.com")
+        return $this->from("notification-coming@falyat.com")
             ->subject('Remind with "' . $this->event->name . '" event')
             ->view('emails.en.coming-event', [
             'event' => $this->event

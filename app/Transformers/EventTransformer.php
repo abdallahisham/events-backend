@@ -3,6 +3,7 @@
 namespace App\Transformers;
 
 use App\Models\Event;
+use Jenssegers\Date\Date;
 
 class EventTransformer extends BaseTransformer
 {
@@ -13,16 +14,21 @@ class EventTransformer extends BaseTransformer
     public function transform($event)
     {
         $user = request()->user('api') ?? false;
+        Date::setLocale('ar');
+        $arStartDate = new Date($event->start_date->format('Y-m-d'));
+        $arEndDate = new Date($event->end_date->format('Y-m-d'));
         return [
             'id' => $event->id,
             'name' => $event->name,
-            'start_date' => $event->start_date->format('D d M'),
-            'end_date' => $event->end_date->format('D d M'),
+            'start_date' => $arStartDate->format('l d F'),
+            'end_date' => $arEndDate->format('l d F'),
+            'start_date_en' => $event->start_date->format('D d M'),
+            'end_date_en' => $event->end_date->format('D d M'),
             'start_time' => $event->start_time_format,
             'end_time' => $event->end_time_format,
             'desc' => $event->description ?? '',
-            'address' => $event->address,
-            'venue' => 'Jeddah International Expo',
+            'address' => $event->address ?? '',
+            'venue' => $event->venue ?? '',
             'price' => $event->price ?? 0,
             'lon' => $event->position_longitude,
             'lat' => $event->position_latitude,

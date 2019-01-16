@@ -9,8 +9,8 @@ use App\Repositories\Contracts\UserRepository;
  */
 class EventBookingService
 {
-    private $eventRepository;
-    private $userRepository;
+    protected $eventRepository;
+    protected $userRepository;
 
     public function __construct(
         EventRepository $eventRepository,

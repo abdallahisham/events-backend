@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class AddDescToUsersTable extends Migration
+class AlterMobileNumberToNullableInUsersTable extends Migration
 {
     /**
      * Run the migrations.
@@ -14,7 +14,7 @@ class AddDescToUsersTable extends Migration
     public function up()
     {
         Schema::table('users', function (Blueprint $table) {
-            $table->text('desc')->nullable();
+            $table->string('mobile_number')->nullable()->change();
         });
     }
 
@@ -25,8 +25,8 @@ class AddDescToUsersTable extends Migration
      */
     public function down()
     {
-        Schema::table('users', function (Blueprint $table) {
-
+        Schema::table('nullable_in_users', function (Blueprint $table) {
+            $table->string('mobile_number')->change();
         });
     }
 }

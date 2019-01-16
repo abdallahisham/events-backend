@@ -13,8 +13,8 @@ use App\Mail\NotifyComingEvent;
  */
 class EventNotificationsService
 {
-    private $userRepository;
-    private $eventRepository;
+    protected $userRepository;
+    protected $eventRepository;
 
     public function __construct(UserRepository $usersRepository, EventRepository $eventRepository)
     {

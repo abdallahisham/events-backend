@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class AddDescToUsersTable extends Migration
+class AddUserTokenToUsersTable extends Migration
 {
     /**
      * Run the migrations.
@@ -14,7 +14,7 @@ class AddDescToUsersTable extends Migration
     public function up()
     {
         Schema::table('users', function (Blueprint $table) {
-            $table->text('desc')->nullable();
+            $table->string('token')->nullabe();
         });
     }
 
@@ -26,7 +26,7 @@ class AddDescToUsersTable extends Migration
     public function down()
     {
         Schema::table('users', function (Blueprint $table) {
-
+            $table->dropColumn('token');
         });
     }
 }

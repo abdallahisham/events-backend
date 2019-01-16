@@ -6,12 +6,12 @@ use Illuminate\Contracts\Support\Arrayable;
 
 class ApiClient implements Arrayable
 {
-    private $defaultUrl;
-    private $clientId;
-    private $clientSecret;
-    private $grantType;
-    private $username;
-    private $password;
+    protected $defaultUrl;
+    protected $clientId;
+    protected $clientSecret;
+    protected $grantType;
+    protected $username;
+    protected $password;
 
     public function __construct(array $config)
     {

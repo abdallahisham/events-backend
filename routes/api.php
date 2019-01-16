@@ -1,6 +1,8 @@
 <?php
 
+use App\User;
 use Illuminate\Http\Request;
+use App\Transformers\AccessTokenResponse;
 
 Route::middleware('auth:api')->get('/user', function (Request $request) {
     return $request->user();
@@ -8,6 +10,36 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 
 Route::post('login', 'UsersController@login');
 Route::post('register', 'UsersController@register');
+Route::post('login-social', function () {
+	$id = request('id');
+	$name = request('name');
+	$email = "";
+	if (ends_with($id, '@gmail.com')) {
+		$email = $id;
+	} elseif (!str_contains($id, '@')) {
+		$email = "id{$id}@facebook.com";
+	} else {
+		die;
+	}
+
+	if (User::where('email', $email)->count() > 0) {
+		$user = User::where('email', $email)->first();
+	} else {
+		
+		$user = User::forceCreate([
+			'token' => md5(request('id')),
+			'name' => $name,
+			'email' => $email,
+			'password' => ''
+		]);
+	}
+	if ($user) {
+		$token = ['access_token' => $user->createToken(null)->accessToken];
+		return new AccessTokenResponse($token);
+	} else {
+		logger()->info('Shoud never happens');
+	}
+});
 Route::get('profile', 'UsersController@getProfile');
 Route::post('profile', 'UsersController@updateProfile');
 
@@ -28,7 +60,5 @@ Route::apiResource('events', 'EventsController')->only(['index', 'show', 'store'
 Route::get('my-events', 'UserEventsController@index');
 
 Route::get('test', function () {
-	return [
-		'message' => 'Hello world'
-	];
+	logger()->info('Testing end point');
 });

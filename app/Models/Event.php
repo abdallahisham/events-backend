@@ -23,6 +23,7 @@ use Illuminate\Database\Eloquent\Model;
  * @property int $user_id
  * @property int $nothing
  * @property string $address
+ * @property string $venue
  * @property \Illuminate\Support\Carbon|null $start_date
  * @property \Illuminate\Support\Carbon|null $end_date
  * @property string $start_time
@@ -73,13 +74,10 @@ class Event extends Model
     protected static function boot()
     {
         parent::boot();
-        static::addGlobalScope(function ($query) {
-            /**
-             * @var $query \Illuminate\Database\Eloquent\Builder
-             */
+        /*static::addGlobalScope(function ($query) {
             $todayDateString = Carbon::now()->format('Y-m-d');
             $query->where('end_date', '>=' , $todayDateString);
-        });
+        });*/
     }
 
     // Relationships
