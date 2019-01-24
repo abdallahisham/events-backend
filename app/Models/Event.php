@@ -37,6 +37,7 @@ use Illuminate\Database\Eloquent\Model;
  * @property mixed $duration
  * @property mixed $going
  * @property mixed $liked_by
+ * @property mixed $is_featured Decide if this event is a featured event
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Event newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Event newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Event query()
@@ -74,10 +75,10 @@ class Event extends Model
     protected static function boot()
     {
         parent::boot();
-        /*static::addGlobalScope(function ($query) {
+        static::addGlobalScope(function ($query) {
             $todayDateString = Carbon::now()->format('Y-m-d');
-            $query->where('end_date', '>=' , $todayDateString);
-        });*/
+            $query->where('end_date', '>=', $todayDateString);
+        });
     }
 
     // Relationships
@@ -118,5 +119,10 @@ class Event extends Model
     {
         [$hour, $minute] = explode(':', $this->end_time);
         return Carbon::createFromTime($hour, $minute, 0)->format('h:i A');
+    }
+
+    public function scopeFeatured($query)
+    {
+        return $query->where('is_featured', 1);
     }
 }

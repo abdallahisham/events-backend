@@ -15,8 +15,7 @@ class EventBookingService
     public function __construct(
         EventRepository $eventRepository,
         UserRepository $userRepository
-    )
-    {
+    ) {
         $this->eventRepository = $eventRepository;
         $this->userRepository = $userRepository;
     }

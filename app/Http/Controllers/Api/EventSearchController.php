@@ -19,7 +19,6 @@ class EventSearchController extends Controller
 
     public function index(Request $request)
     {
-        logger()->info('Searching...');
         $events = $this->events->filter($request);
         return new Response($events, new EventTransformer());
     }

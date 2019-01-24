@@ -25,7 +25,6 @@ class EventsController extends Controller
 
     public function index()
     {
-        logger()->info('Getting events');
         $events = $this->events->with(['user'])
             ->orderBy('created_at', 'DESC')
             ->all();
@@ -36,17 +35,12 @@ class EventsController extends Controller
 
     public function store(EventCreateRequest $request)
     {
-        logger()->info('Adding event..');
-        logger()->info('Address: ' . $request->address);
-        logger()->info('Long: ' . $request->long);
-        logger()->info('Lat: ' . $request->lat);
         $event = $this->events->create($request->prepared());
         return new EventResponse($event, EventResponse::HTTP_CREATED);
     }
 
     public function storeImage(Request $request)
     {
-        logger()->info('Uploading image...');
         $this->events->saveImage($request, $request->id);
         return new ResponseWithCode(200);
     }
@@ -59,7 +53,6 @@ class EventsController extends Controller
 
     public function update(EventUpdateRequest $request)
     {
-        logger()->info('Updating ' . $request->id);
         $event = $this->events->find($request->id);
         $this->events->update($request->prepared(), $event->id);
         return new EventResponse($event, 200);

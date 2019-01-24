@@ -38,7 +38,8 @@ class EventTransformer extends BaseTransformer
             'user_desc' => $event->user->desc ?? '',
             'duration' => $event->duration,
             'is_liked' => $user ? $user->favorites->where('id', $event->id)->count() : 0,
-            'is_booked' => $user ? $user->booking->where('id', $event->id)->count() : 0
+            'is_booked' => $user ? $user->booking->where('id', $event->id)->count() : 0,
+            'is_featured' => $event->is_featured
         ];
     }
 }

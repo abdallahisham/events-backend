@@ -2,7 +2,6 @@
 
 namespace App\Repositories;
 
-use App\Repositories\Criteria;
 use Illuminate\Http\Request;
 use Prettus\Repository\Eloquent\BaseRepository;
 use Prettus\Repository\Criteria\RequestCriteria;
@@ -68,7 +67,7 @@ class EventRepositoryEloquent extends BaseRepository implements EventRepository
             $this->pushCriteria(new Criteria\EventCityCriteria());
         }
 
-        return $this->with('user')->orderBy('created_at', 'desc')->simplePaginate(10);
+        return $this->with('user')->orderBy('created_at', 'desc')->all();
     }
 
     public function getEventsTypes(): array

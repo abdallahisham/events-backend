@@ -4,7 +4,6 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Requests\RegisterUserRequest;
 use App\Transformers\AccessTokenResponse;
-use App\Transformers\UserResponse;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Repositories\Contracts\UserRepository;
@@ -13,7 +12,7 @@ class UsersController extends Controller
 {
     private $users;
 
-    function __construct(UserRepository $users)
+    public function __construct(UserRepository $users)
     {
         $this->middleware('auth:api')->only(['getProfile', 'updateProfile']);
         $this->users = $users;
@@ -27,7 +26,6 @@ class UsersController extends Controller
 
     public function register(RegisterUserRequest $request)
     {
-        logger()->info('Registering user...');
         $this->users->create($request->prepared());
         logger()->info($request->prepared()['desc']);
         $response = $this->users->login($request->all());
@@ -36,7 +34,6 @@ class UsersController extends Controller
 
     public function getProfile()
     {
-        logger()->info("Getting profile ...");
         $id = auth()->id();
         $user = $this->users->find($id);
         logger()->info($user->id);
@@ -53,6 +50,5 @@ class UsersController extends Controller
 
     public function updateProfile(Request $request)
     {
-        
     }
 }

@@ -16,7 +16,6 @@ class UserEventsController extends Controller
 
     public function index(Request $request)
     {
-        logger()->info("Getting {$request->user()->email}'s events");
         $events = $request->user()->events;
         return new Response($events, new EventTransformer());
     }

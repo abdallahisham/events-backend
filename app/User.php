@@ -2,10 +2,11 @@
 
 namespace App;
 
+use App\Models\Role;
 use App\Models\Event;
+use Laravel\Passport\HasApiTokens;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Foundation\Auth\User as Authenticatable;
-use Laravel\Passport\HasApiTokens;
 
 /**
  * App\User
@@ -80,5 +81,25 @@ class User extends Authenticatable
     public function booking()
     {
         return $this->belongsToMany(Event::class, 'booking', 'event_id', 'user_id');
+    }
+
+    public function roles()
+    {
+        return $this->belongsToMany(Role::class);
+    }
+
+    public function isA(string $role)
+    {
+        $roles = $this->roles->pluck('name')->all();
+        if (in_array($role, $roles)) {
+            return true;
+        }
+        return false;
+    }
+
+    // Just an alias for isA() to more readable code
+    public function isAn(string $role)
+    {
+        return $this->isA($role);
     }
 }
