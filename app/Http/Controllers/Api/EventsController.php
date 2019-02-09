@@ -41,6 +41,7 @@ class EventsController extends Controller
 
     public function storeImage(Request $request)
     {
+        logger()->info('Uploading image...');
         $this->events->saveImage($request, $request->id);
         return new ResponseWithCode(200);
     }
@@ -53,7 +54,9 @@ class EventsController extends Controller
 
     public function update(EventUpdateRequest $request)
     {
+        logger()->info('update');
         $event = $this->events->find($request->id);
+        logger()->info(implode('--', $request->prepared()));
         $this->events->update($request->prepared(), $event->id);
         return new EventResponse($event, 200);
     }

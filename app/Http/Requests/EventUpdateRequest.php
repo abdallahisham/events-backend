@@ -3,8 +3,9 @@
 namespace App\Http\Requests;
 
 use Carbon\Carbon;
-use Illuminate\Foundation\Http\FormRequest;
+use Jenssegers\Date\Date;
 use InvalidArgumentException;
+use Illuminate\Foundation\Http\FormRequest;
 
 class EventUpdateRequest extends FormRequest
 {
@@ -44,15 +45,16 @@ class EventUpdateRequest extends FormRequest
 
     public function prepared()
     {
+        Date::setLocale('ar');
         try {
-            $start_date = Carbon::createFromFormat('D d M', request('start_date'));
+            $start_date = Date::createFromFormat('l d F', request('start_date'));
         } catch (InvalidArgumentException $e) {
-            $start_date = new Carbon(request('start_date'));
+            $start_date = Carbon::createFromFormat('D d M', request('start_date'));
         }
         try {
-            $end_date = Carbon::createFromFormat('D d M', request('end_date'));
+            $end_date = Date::createFromFormat('l d F', request('end_date'));
         } catch (InvalidArgumentException $e) {
-            $end_date = new Carbon(request('end_date'));
+            $end_date = Carbon::createFromFormat('D d M', request('end_date'));
         }
         try {
             $start_time = Carbon::createFromFormat('H:i A', request('start_time'));
