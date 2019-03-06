@@ -33,13 +33,6 @@ class EventUpdateRequest extends FormRequest
             'end_date' => ['required', 'after_or_equal:start_date'],
             'start_time' => ['required'],
             'end_time' => ['required'],
-            'address' => ['required'],
-            'venue' => ['required'],
-            'lat' => ['required'],
-            'long' => ['required'],
-            'sponsor' => ['required'],
-            'type' => ['required'],
-            'price' => ['required'],
         ];
     }
 
@@ -49,12 +42,20 @@ class EventUpdateRequest extends FormRequest
         try {
             $start_date = Date::createFromFormat('l d F', request('start_date'));
         } catch (InvalidArgumentException $e) {
-            $start_date = Carbon::createFromFormat('D d M', request('start_date'));
+            try {
+                $start_date = Carbon::createFromFormat('D d M', request('start_date'));
+            } catch (InvalidArgumentException $e) {
+                $start_date = new Carbon(request('start_date'));
+            }
         }
         try {
             $end_date = Date::createFromFormat('l d F', request('end_date'));
         } catch (InvalidArgumentException $e) {
-            $end_date = Carbon::createFromFormat('D d M', request('end_date'));
+            try {
+                $end_date = Carbon::createFromFormat('D d M', request('end_date'));
+            } catch (InvalidArgumentException $e) {
+                $end_date = new Carbon(request('end_date'));
+            }
         }
         try {
             $start_time = Carbon::createFromFormat('H:i A', request('start_time'));
@@ -78,11 +79,8 @@ class EventUpdateRequest extends FormRequest
             'venue' => request('venue'),
             'position_latitude' => request('lat'),
             'position_longitude' => request('long'),
-            'has_sponsors' => request('sponsor'),
+            'has_sponsors' => request('sponsor') ?? 0,
             'event_type_id' => request('type'),
-            'user_id' => request()->user()->id,
-            'city_id' => request('city') ?? 1,
-            'price' => request('price')
         ];
 
         return $data;

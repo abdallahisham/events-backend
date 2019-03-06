@@ -9,6 +9,10 @@ Route::get('command/migrate', function () {
     Artisan::call('migrate');
     return Artisan::output();
 });
+Route::get('command/storage:link', function () {
+    Artisan::call('storage:link');
+    return Artisan::output();
+});
 
 Auth::routes();
 
