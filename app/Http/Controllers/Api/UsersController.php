@@ -21,14 +21,15 @@ class UsersController extends Controller
     public function login(Request $request)
     {
         $response = $this->users->login($request->all());
+
         return new AccessTokenResponse($response, 200);
     }
 
     public function register(RegisterUserRequest $request)
     {
         $this->users->create($request->prepared());
-        logger()->info($request->prepared()['desc']);
         $response = $this->users->login($request->all());
+
         return new AccessTokenResponse($response, 200);
     }
 
@@ -36,15 +37,15 @@ class UsersController extends Controller
     {
         $id = auth()->id();
         $user = $this->users->find($id);
-        logger()->info($user->id);
+
         return [
             'response' => [
                 'httpCode' => 200,
                 'name' => $user->name,
-                'email' => str_contains($user->email, '@facebook') ? '' :$user->email,
+                'email' => str_contains($user->email, '@facebook') ? '' : $user->email,
                 'mobile_number' => $user->mobile_number ?? '',
-                'desc' => $user->desc ?? ''
-            ]
+                'desc' => $user->desc ?? '',
+            ],
         ];
     }
 

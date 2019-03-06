@@ -7,37 +7,38 @@ use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
 
 /**
- * App\Event
+ * App\Event.
  *
- * @property int $id
- * @property string $name
- * @property int $event_type_id
- * @property float $position_latitude
- * @property float $position_longitude
- * @property string $image
- * @property string $description
- * @property int $is_free
- * @property float|null $price
- * @property int $max_tickets_count
- * @property int $has_sponsors
- * @property int $user_id
- * @property int $nothing
- * @property string $address
- * @property string $venue
+ * @property int                             $id
+ * @property string                          $name
+ * @property int                             $event_type_id
+ * @property float                           $position_latitude
+ * @property float                           $position_longitude
+ * @property string                          $image
+ * @property string                          $description
+ * @property int                             $is_free
+ * @property float|null                      $price
+ * @property int                             $max_tickets_count
+ * @property int                             $has_sponsors
+ * @property int                             $user_id
+ * @property int                             $nothing
+ * @property string                          $address
+ * @property string                          $venue
  * @property \Illuminate\Support\Carbon|null $start_date
  * @property \Illuminate\Support\Carbon|null $end_date
- * @property string $start_time
- * @property string $start_time_format
- * @property string $end_time
- * @property string $end_time_format
+ * @property string                          $start_time
+ * @property string                          $start_time_format
+ * @property string                          $end_time
+ * @property string                          $end_time_format
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
- * @property mixed|User $user
- * @property mixed $image_url
- * @property mixed $duration
- * @property mixed $going
- * @property mixed $liked_by
- * @property mixed $is_featured Decide if this event is a featured event
+ * @property mixed|User                      $user
+ * @property mixed                           $image_url
+ * @property mixed                           $duration
+ * @property mixed                           $going
+ * @property mixed                           $liked_by
+ * @property mixed                           $is_featured        Decide if this event is a featured event
+ *
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Event newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Event newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Event query()
@@ -61,7 +62,7 @@ use Illuminate\Database\Eloquent\Model;
 class Event extends Model
 {
     protected $guarded = [
-        'id'
+        'id',
     ];
 
     protected $dates = [
@@ -69,7 +70,7 @@ class Event extends Model
     ];
 
     protected $appends = [
-        'image_url', 'duration', 'start_time_format', 'end_time_format'
+        'image_url', 'duration', 'start_time_format', 'end_time_format',
     ];
 
     protected static function boot()
@@ -97,10 +98,10 @@ class Event extends Model
         return $this->belongsToMany(User::class, 'event_user', 'user_id', 'event_id');
     }
 
-    // Accessors and mutators
     public function getImageUrlAttribute()
     {
         $baseUrl = env('APP_URL');
+
         return "{$baseUrl}/storage/{$this->user_id}/{$this->image}";
     }
 
@@ -112,12 +113,14 @@ class Event extends Model
     public function getStartTimeFormatAttribute()
     {
         [$hour, $minute] = explode(':', $this->start_time);
+
         return Carbon::createFromTime($hour, $minute, 0)->format('h:i A');
     }
 
     public function getEndTimeFormatAttribute()
     {
         [$hour, $minute] = explode(':', $this->end_time);
+
         return Carbon::createFromTime($hour, $minute, 0)->format('h:i A');
     }
 

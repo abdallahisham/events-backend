@@ -28,7 +28,6 @@ class EventsController extends Controller
         $events = $this->events->with(['user'])
             ->orderBy('created_at', 'DESC')
             ->all();
-//            ->simplePaginate(10);
 
         return new Response($events, new EventTransformer());
     }
@@ -36,28 +35,30 @@ class EventsController extends Controller
     public function store(EventCreateRequest $request)
     {
         $event = $this->events->create($request->prepared());
+
         return new EventResponse($event, EventResponse::HTTP_CREATED);
     }
 
     public function storeImage(Request $request)
     {
-        logger()->info('Uploading image...');
         $this->events->saveImage($request, $request->id);
+
         return new ResponseWithCode(200);
     }
 
     public function show($id)
     {
         $event = $this->events->with(['user'])->find($id);
+
         return new EventResponse($event);
     }
 
     public function update(EventUpdateRequest $request)
     {
-        logger()->info('update');
         $event = $this->events->find($request->id);
         logger()->info(implode('--', $request->prepared()));
         $this->events->update($request->prepared(), $event->id);
+
         return new EventResponse($event, 200);
     }
 
@@ -67,6 +68,7 @@ class EventsController extends Controller
         if ($event->user_id == $userRepository->authenticatedUserId()) {
             $this->events->delete($event->id);
         }
+
         return new ResponseWithCode(200);
     }
 }
